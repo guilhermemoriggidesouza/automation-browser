@@ -11,7 +11,11 @@ function delay(time) {
     setTimeout(resolve, time);
   });
 }
-
+async function clickXPath(xpath, page) {
+  await page.waitForXPath(xpath);
+  const elements = await page.$x(xpath);
+  await elements[0].click();
+}
 async function waitForClick(page, selector) {
   await page.waitForSelector(selector, { visible: true, timeout: 0 });
   await delay(1000);
@@ -28,11 +32,7 @@ const login = async (page, email, password) => {
 };
 
 const navigate = async (page, browser) => {
-  await page.waitForSelector(
-    "a[href='https://app.omie.com.br/gestao/estoque-zybfsof/']"
-  );
-
-  await page.click("a[href='https://app.omie.com.br/gestao/estoque-zybfsof/']");
+  await clickXPath('//*[@id="root"]/div/main/div/div[1]/div[2]/div/div/div/div[2]/div[4]/div/button', page);
   const newPage = await newPagePromise(browser);
   await newPage.setViewport({ width: 0, height: 0 });
   await newPage.waitForSelector(".tile__inner", { visible: true });
@@ -44,7 +44,7 @@ const navigate = async (page, browser) => {
 
 const processCtes = async (page, ctesDown) => {
   if (ctesDown % 50 == 0) {
-    console.log("mostrar mais")
+    console.log("mostrar mais");
     await waitForClick(
       page,
       "#dialogContent-30002 > div > div:nth-child(4) > ul > li:nth-child(1) > div.list-card-container.clearfix"
