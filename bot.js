@@ -11,14 +11,10 @@ function delay(time) {
     setTimeout(resolve, time);
   });
 }
-async function clickXPath(xpath, page) {
-  await page.waitForXPath(xpath);
-  const elements = await page.$x(xpath);
-  await elements[0].click();
-}
+
 async function waitForClick(page, selector) {
   await page.waitForSelector(selector, { visible: true, timeout: 0 });
-  await delay(1000);
+  await delay(200);
   await page.click(selector);
 }
 
@@ -32,7 +28,14 @@ const login = async (page, email, password) => {
 };
 
 const navigate = async (page, browser) => {
-  await clickXPath('//*[@id="root"]/div/main/div/div[1]/div[2]/div/div/div/div[2]/div[4]/div/button', page);
+  await page.waitForSelector(
+    "#root > main > div > div.MuiGrid-root.MuiGrid-container.jss94.css-1d3bbye > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-12o6q2q > div > div > div > div.MuiGrid-root.MuiGrid-container.jss75.css-1d3bbye > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-10.css-1v3pb4k > div > button"
+  );
+
+  await waitForClick(
+    page,
+    "#root > main > div > div.MuiGrid-root.MuiGrid-container.jss94.css-1d3bbye > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-12o6q2q > div > div > div > div.MuiGrid-root.MuiGrid-container.jss75.css-1d3bbye > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-10.css-1v3pb4k > div > button"
+  );
   const newPage = await newPagePromise(browser);
   await newPage.setViewport({ width: 0, height: 0 });
   await newPage.waitForSelector(".tile__inner", { visible: true });
@@ -51,7 +54,6 @@ const processCtes = async (page, ctesDown) => {
     );
   }
   let monitorRequests = new PendingXHR(page);
-  await delay(1000);
   await waitForClick(
     page,
     "#dialogContent-30002 > div > div:nth-child(4) > ul > li:nth-child(1) > div.list-card-container.clearfix"
@@ -79,7 +81,7 @@ const processCtes = async (page, ctesDown) => {
     page,
     "#d50651c201g > span.ui-igedit.ui-state-default.ui-widget.ui-corner-all.ui-igedit-container > span"
   );
-  await delay(2000);
+  await delay(1000);
   await page.type("#dynamicSearchText", valueOfCfop == 5 ? "1.353" : "2.353");
   await waitForClick(
     page,
